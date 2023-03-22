@@ -32,7 +32,13 @@ class Board:
         return (pit.position - 5) * -1
 
     def update_pit(self, pit: PitReference, new_value: int) -> None:
+        if new_value < 0:
+            raise ValueError("The number stones in a pit can't be negative")
+
         self.pits[pit.player_id][pit.position] = new_value
 
     def update_score(self, player_id: int, new_score: int) -> None:
+        if new_score < 0:
+            raise ValueError("The number of stones in a mancala can't be negative")
+
         self.mancalas[player_id] = new_score

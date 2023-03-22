@@ -3,7 +3,7 @@ TESTS_FOLDER = tests/
 
 .PHONY: tests
 tests: ## Run all unit tests.
-	@poetry run python -m unittest -v -s tests/
+	@poetry run python -m unittest discover -v -s $(TESTS_FOLDER) 
 
 black: ## Run black inside the project folder.
 	@poetry run black $(FOLDER_PROJECT)
