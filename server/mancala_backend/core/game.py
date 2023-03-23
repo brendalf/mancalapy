@@ -19,7 +19,7 @@ class MancalaGame:
     num_pits: int = 6
 
     def __post_init__(self) -> None:
-        self.board = Board(self.num_players, self.num_stones, self.num_pits)
+        self.board = Board(self.num_players, self.num_pits, self.num_stones)
 
     def has_game_ended(self) -> bool:
         for player_id in range(self.num_players):
@@ -28,18 +28,21 @@ class MancalaGame:
 
         return False
 
-    def execute_player_movement(self, player_moving: int, selected_pit: int):
-        assert (
-            player_moving == self.current_player
-        ), f"User {player_moving} isn't allowed to move when it's not his turn"
+    def execute_player_movement(self, player_moving: int, selected_pit: int) -> None:
+        if player_moving not in range(self.num_players):
+            raise ValueError(
+                f"The player id {player_moving} isn't valid. It needs to be one of the following values: {list(range(self.num_players))}"
+            )
+
+        if player_moving != self.current_player:
+            raise PermissionError(
+                f"User {player_moving} isn't allowed to move when it's not his turn"
+            )
 
         initial_pit = PitReference(player_id=player_moving, position=selected_pit)
 
-        (
-            impacted_pits,
-            stones_captured,
-            player_moves_again,
-        ) = self._calculate_movement_plan(initial_pit)
+        movement_plan = self._calculate_movement_plan(initial_pit)
+        impacted_pits, stones_captured, player_moves_again = movement_plan
 
         self.board.update_pit(initial_pit, 0)
 
@@ -64,7 +67,8 @@ class MancalaGame:
                 self.board.update_pit(last_pit, 0)
                 self.board.update_pit(oposite_pit, 0)
 
-        self.board.update_score(player_moving, stones_captured)
+        current_stones = self.board.get_score(player_id=player_moving)
+        self.board.update_score(player_moving, current_stones + stones_captured)
 
         self.current_player = (
             self.current_player
