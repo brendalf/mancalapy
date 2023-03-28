@@ -1,10 +1,9 @@
-from unittest import TestCase
+import unittest
 
-from mancala_backend.core.board import Board
-from mancala_backend.core.pit import PitReference
+from mancala_backend.core import Board, PitReference
 
 
-class TestBoard(TestCase):
+class TestBoard(unittest.TestCase):
     def setUp(self) -> None:
         self.board = Board(num_players=2, num_pits=6, stones=4)
 
@@ -71,3 +70,5 @@ class TestBoard(TestCase):
         with self.assertRaises(ValueError):
             self.board.update_score(1, -2)
 
+if __name__ == '__main__':
+    unittest.main()

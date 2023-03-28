@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from .pit import PitReference
+from mancala_backend.core.pit import PitReference
 
 
 @dataclass
@@ -11,18 +11,18 @@ class Board:
 
     Attributes
     ----------
-    num_players : int 
+    num_players : int
         The number of players in the game.
-    num_pits : int 
+    num_pits : int
         The number of pits per player.
     stones : int
         The number of stones in each pit at the start of the game.
     pits : List[List[int]]
         A list of lists representing the pits on the board.
-        Each inner list represents a player's pits, and each entry in the inner list is the number of stones 
+        Each inner list represents a player's pits, and each entry in the inner list is the number of stones
         in that pit.
     mancalas : List[int]
-        A list representing the mancalas on the board. The first entry is the first player's mancala, and the 
+        A list representing the mancalas on the board. The first entry is the first player's mancala, and the
         second entry is the second player's mancala.
     """
 
@@ -37,9 +37,7 @@ class Board:
         """
         Initializes the pits and mancalas lists.
         """
-        self.pits = [
-            [self.stones] * self.num_pits for _ in range(self.num_players)
-        ]
+        self.pits = [[self.stones] * self.num_pits for _ in range(self.num_players)]
         self.mancalas = [0] * self.num_players
 
     def get_score(self, player_id: int) -> int:
@@ -80,7 +78,7 @@ class Board:
 
         Parameters
         ----------
-        player_id : int 
+        player_id : int
             The ID of the player whose total number of stones to get.
 
         Returns

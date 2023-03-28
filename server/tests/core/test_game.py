@@ -1,10 +1,10 @@
-from unittest import TestCase
+import unittest
 
 from mancala_backend.core.game import MancalaGame
 from mancala_backend.core.pit import PitReference
 
 
-class TestGame(TestCase):
+class TestGame(unittest.TestCase):
     def setUp(self) -> None:
         self.game = MancalaGame()
 
@@ -118,10 +118,5 @@ class TestGame(TestCase):
         self.assertEqual(stones_captured, 1)
         self.assertFalse(player_moves_again)
 
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    unittest.main()

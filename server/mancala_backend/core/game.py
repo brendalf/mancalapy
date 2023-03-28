@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import List, Tuple
 from uuid import UUID, uuid4
 
-from .board import Board
-from .pit import PitReference
+from mancala_backend.core.board import Board
+from mancala_backend.core.pit import PitReference
 
 
 @dataclass()
@@ -26,6 +26,7 @@ class MancalaGame:
     pits_per_player : int
         The number of pits that each player should have at the beginning of the game.
     """
+
     board: Board = field(init=False)
 
     current_player: int = field(default=0, init=False)
@@ -161,7 +162,11 @@ class MancalaGame:
             The reference to the next pit.
         """
         next_pit = (current_pit.position + 1) % self.pits_per_player
-        next_player = self._define_next_player(current_pit.player_id) if next_pit < current_pit.position else current_pit.player_id
+        next_player = (
+            self._define_next_player(current_pit.player_id)
+            if next_pit < current_pit.position
+            else current_pit.player_id
+        )
 
         return PitReference(player_id=next_player, position=next_pit)
 

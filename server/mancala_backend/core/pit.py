@@ -13,5 +13,6 @@ class PitReference:
     position : int
         The position of the pit in the list of pits owned by the player.
     """
+
     player_id: int
     position: int
