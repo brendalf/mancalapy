@@ -8,6 +8,24 @@ from .pit import PitReference
 
 @dataclass()
 class MancalaGame:
+    """
+    A class representing a Mancala game.
+
+    Attributes
+    ----------
+    board : :class:`Board`
+        The board where the game is being played.
+    current_player : int
+        The player who should move next.
+    id : :class:`UUID`
+        The unique identifier for the game.
+    num_players : int
+        The number of players in the game.
+    stones_per_pit : int
+        The number of stones that each pit should have at the beginning of the game.
+    pits_per_player : int
+        The number of pits that each player should have at the beginning of the game.
+    """
     board: Board = field(init=False)
 
     current_player: int = field(default=0, init=False)
@@ -15,13 +33,24 @@ class MancalaGame:
     id: UUID = uuid4()
 
     num_players: int = 2
-    num_stones: int = 4
-    num_pits: int = 6
+    stones_per_pit: int = 4
+    pits_per_player: int = 6
 
     def __post_init__(self) -> None:
-        self.board = Board(self.num_players, self.num_pits, self.num_stones)
+        self.board = Board(self.num_players, self.pits_per_player, self.stones_per_pit)
 
     def has_game_ended(self) -> bool:
+        """
+        Checks if the game has ended.
+
+        The game ends when a player can't move anymore.
+        In other words, when all the pits of a player are empty.
+
+        Returns
+        -------
+        bool
+            A boolean indicating if the game has ended.
+        """
         for player_id in range(self.num_players):
             if self.board.get_total_stones_in_players_pits(player_id) == 0:
                 return True
@@ -29,6 +58,29 @@ class MancalaGame:
         return False
 
     def execute_player_movement(self, player_moving: int, selected_pit: int) -> None:
+        """
+        Executes a player movement.
+
+        A movement is executed like this:
+        - The player will move all stones from the selected pit to the following pits.
+        - If the last stone is placed in the player's mancala, the player will receive an extra move.
+        - If the last stone is placed in a empty pit from the player, the player will capture the stone added and all the stones in the opposite pit.
+
+        Parameters
+        ----------
+        player_moving : int
+            The player id who is moving the stones.
+        selected_pit : int
+            The position of the pit where the player is moving the stones from.
+
+        Raises
+        ------
+        ValueError
+            If the player id isn't valid.
+        PermissionError
+            If the player id isn't the current player.
+        """
+        # validate inputs
         if player_moving not in range(self.num_players):
             raise ValueError(
                 f"The player id {player_moving} isn't valid. It needs to be one of the following values: {list(range(self.num_players))}"
@@ -58,7 +110,7 @@ class MancalaGame:
             if (stones_last_pit == 1) and (last_pit.player_id == player_moving):
                 oposite_pit = PitReference(
                     player_id=self._define_next_player(last_pit.player_id),
-                    position=self.board.get_oposite_pit_position(last_pit),
+                    position=self.board.get_opposite_pit_position(last_pit),
                 )
 
                 # capture the stone added and all the stones in the opposite pit.
@@ -91,8 +143,7 @@ class MancalaGame:
         int
             The next player id.
         """
-        next_player = current_player_id + 1
-        return 0 if next_player == self.num_players else next_player
+        return (current_player_id + 1) % self.num_players
 
     def _define_next_pit(self, current_pit: PitReference) -> PitReference:
         """
@@ -101,7 +152,7 @@ class MancalaGame:
 
         Parameters
         ----------
-        current_pit : PitReference
+        current_pit : :class:`PitReference`
             The reference to the current pit.
 
         Returns
@@ -109,20 +160,30 @@ class MancalaGame:
         PitReference
             The reference to the next pit.
         """
-        next_pit_position = current_pit.position + 1
-        next_player = current_pit.player_id
+        next_pit = (current_pit.position + 1) % self.pits_per_player
+        next_player = self._define_next_player(current_pit.player_id) if next_pit < current_pit.position else current_pit.player_id
 
-        if next_pit_position >= self.num_pits:
-            next_pit_position = 0
-            next_player = self._define_next_player(current_pit.player_id)
-
-        return PitReference(player_id=next_player, position=next_pit_position)
+        return PitReference(player_id=next_player, position=next_pit)
 
     def _calculate_movement_plan(
         self, initial_pit: PitReference
     ) -> Tuple[List[PitReference], int, bool]:
         """
-        If the next pit is the mancala of the player who is moving, the stone will be captured.
+        Calculates the movement plan based on a initial pit.
+        If the last stone is placed in the player's mancala, the player will receive an extra move.
+
+        Parameters
+        ----------
+        initial_pit : :class:`PitReference`
+            The reference to the pit where the player is moving the stones from.
+
+        Returns
+        -------
+        Tuple[List[PitReference], int, bool]
+            A tuple with the following elements:
+            - A list of the impacted pits.
+            - The number of stones captured.
+            - A boolean indicating if the player who is moving received an extra move.
         """
         stones_to_move = self.board.get_stones_from_pit(initial_pit)
 

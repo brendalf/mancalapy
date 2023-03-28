@@ -40,7 +40,7 @@ class TestBoard(TestCase):
         }
 
         for pit, opposite_pit_position in pits.items():
-            self.assertEqual(self.board.get_oposite_pit_position(pit), opposite_pit_position)
+            self.assertEqual(self.board.get_opposite_pit_position(pit), opposite_pit_position)
 
     def test_update_pit(self) -> None:
         pit0 = PitReference(player_id=0, position=2)
