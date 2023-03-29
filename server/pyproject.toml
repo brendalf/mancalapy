@@ -9,6 +9,9 @@ packages = [{include = "mancala_backend"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+flask = "^2.2.3"
+flask-socketio = "^5.3.3"
+eventlet = "^0.33.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

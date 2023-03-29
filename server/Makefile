@@ -1,9 +1,12 @@
 FOLDER_PROJECT = mancala_backend/
 TESTS_FOLDER = tests/
 
+start: ## Starts the backend server.
+	@poetry run python ${FOLDER_PROJECT}/main.py
+
 .PHONY: tests
 tests: ## Run all unit tests.
-	poetry run python -m unittest discover -v -b --locals -s $(TESTS_FOLDER) 
+	@poetry run python -m unittest discover -v -b --locals -s $(TESTS_FOLDER) 
 
 black: ## Run black inside the project folder.
 	@poetry run black $(FOLDER_PROJECT)

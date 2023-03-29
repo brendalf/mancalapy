@@ -219,3 +219,7 @@ class MancalaGame:
             current_pit = next_pit
 
         return impacted_pits, stones_captured, player_moves_again
+
+    def get_game_id(self) -> str:
+        """Returns the game id as string."""
+        return self.id.hex
