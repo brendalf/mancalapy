@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/10671410/228400388-0c7edac0-b820-4eaf-8c16-942cd1e158dc.jpg" width="150">
+<img src="https://user-images.githubusercontent.com/10671410/228400781-2751a47e-d5ba-4245-8903-b1dcae9e3b80.png" width="150">
 
 # mancalapy
 
