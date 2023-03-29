@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mancala Game</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+    </head>
+    <body>
+        <div id="header">
+            <img src="{{ url_for('static', filename='mancala.png') }}" width="150">
+
+            <h1>Mancala Game</h1>
+        </div>
+
+        <div id="menu">
+            <button onclick="startSinglePlayerGame()">Start the game</button>
+            <button onclick="showHowToPlay()">How to Play</button>
+        </div>
+
+        <div id="game">
+            <h3>Player 2</h3>
+            <div class="board">
+                <div class="mancala player2"></div>
+                <div class="pits">
+                    <div class="pit-row">
+                        <div class="pit player2"></div>
+                        <div class="pit player2"></div>
+                        <div class="pit player2"></div>
+                        <div class="pit player2"></div>
+                        <div class="pit player2"></div>
+                        <div class="pit player2"></div>
+                    </div>
+                    <div class="pit-row">
+                        <div class="pit player1" onmouseover="myFunction()"></div>
+                        <div class="pit player1" onmouseover="myFunction()"></div>
+                        <div class="pit player1"></div>
+                        <div class="pit player1"></div>
+                        <div class="pit player1"></div>
+                        <div class="pit player1"></div>
+                    </div>
+                </div>
+                <div class="mancala player1"></div>
+            </div>
+            <h3>Player 1</h3>
+        </div>
+
+        <div id="how-to-play" class="invisible">
+            <h2>How to Play</h2>
+            <p>Mancala is a two-player strategy game that is played with a board and small stones or seeds. The board has six pits on each side and two larger pits, called mancalas, at each end.</p>
+            <p><strong>The objective of the game is to capture more stones than your opponent.</strong></p>
+            <p>Players take turns picking up stones from one of the pits on their side of the board and distributing them one at a time, moving counterclockwise around the board.</p>
+            <p>Stones are placed in the player's own mancala but not in the opponent's mancala.</p>
+            <p>If the last stone lands in the player's mancala, they get to take another turn.</p>
+            <p>If the last stone lands in an empty pit on the player's side, they capture that stone and any stones in the pit opposite to it, and place them in their mancala.</p>
+            <p>The game ends when one player captures all the stones or the pits on one side of the board are empty. The player with the most stones in their mancala at the end of the game wins.</p>
+    </div>
+
+    <!-- <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>

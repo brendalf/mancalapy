@@ -1,0 +1,127 @@
+body {
+    height: 100vh;
+    background: #f9d9d2;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+}
+
+h1 {
+    color: #863a03;
+    font-weight: 700;
+}
+
+h2 {
+    color: #863a03;
+    font-weight: 400;
+}
+
+p {
+    font-weight: 300;
+}
+
+/* HEADER */
+#header {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+}
+
+#header h1 {
+    text-align: center;
+}
+
+/* MENU */
+#menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 50px;
+    height: 200px;
+}
+
+#menu button {
+    margin: 0 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4a240d;
+    color: #fff;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+#menu button:hover {
+    background-color: #9b4b1b;
+}
+
+/* GAME */
+#game {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.board {
+    display: flex;
+}
+
+.pit-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pit {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    margin: 10px;
+}
+
+.mancala {
+    width: 100px;
+    height: 125px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.player1 {
+    background-color: #cbf2ab;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.player1:hover {
+    opacity: 0.75;
+}
+
+.player2 {
+    background-color: #ffd2a3;
+}
+
+/* HOW TO PLAY */
+#how-to-play {
+    display: none;
+    width: 80%;
+    max-width: 700px;
+    margin: 50px auto;
+    text-align: justify;
+}
+
+#how-to-play h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#how-to-play p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
