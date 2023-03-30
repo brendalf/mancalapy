@@ -15,33 +15,29 @@
         </div>
 
         <div id="menu">
-            <button onclick="startSinglePlayerGame()">Start the game</button>
+            <button id="start_game" onclick="startSinglePlayerGame()">Start the game</button>
+            <button id="stop_game" onclick="disconnectFromGame()">Disconnect from game</button>
             <button onclick="showHowToPlay()">How to Play</button>
         </div>
 
         <div id="game">
             <h3>Player 2</h3>
             <div class="board">
-                <div class="mancala player2"></div>
+                <div id="mancala-0" class="mancala player-0"></div>
                 <div class="pits">
+                    {% for player_id in range(2) %}
                     <div class="pit-row">
-                        <div class="pit player2"></div>
-                        <div class="pit player2"></div>
-                        <div class="pit player2"></div>
-                        <div class="pit player2"></div>
-                        <div class="pit player2"></div>
-                        <div class="pit player2"></div>
+                        {% for pit in range(6) %}
+                        {% if player_id == 0 %}
+                        <div id="{{ player_id }}-{{ pit }}" class="pit player-{{player_id}}" onmouseover="planMovement()"></div>
+                        {% else %}
+                        <div id="{{ player_id }}-{{ pit }}" class="pit player-{{player_id}}"></div>
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <div class="pit-row">
-                        <div class="pit player1" onmouseover="myFunction()"></div>
-                        <div class="pit player1" onmouseover="myFunction()"></div>
-                        <div class="pit player1"></div>
-                        <div class="pit player1"></div>
-                        <div class="pit player1"></div>
-                        <div class="pit player1"></div>
-                    </div>
+                    {% endfor %}
                 </div>
-                <div class="mancala player1"></div>
+                <div id="mancala-1" class="mancala player-1"></div>
             </div>
             <h3>Player 1</h3>
         </div>
@@ -57,7 +53,6 @@
             <p>The game ends when one player captures all the stones or the pits on one side of the board are empty. The player with the most stones in their mancala at the end of the game wins.</p>
     </div>
 
-    <!-- <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
