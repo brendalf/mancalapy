@@ -94,7 +94,7 @@ class MancalaGame:
 
         initial_pit = PitReference(player_id=player_moving, position=selected_pit)
 
-        movement_plan = self._calculate_movement_plan(initial_pit)
+        movement_plan = self.calculate_movement_plan(initial_pit)
         impacted_pits, stones_captured, player_moves_again = movement_plan
 
         self.board.update_pit(initial_pit, 0)
@@ -170,7 +170,7 @@ class MancalaGame:
 
         return PitReference(player_id=next_player, position=next_pit)
 
-    def _calculate_movement_plan(
+    def calculate_movement_plan(
         self, initial_pit: PitReference
     ) -> Tuple[List[PitReference], int, bool]:
         """

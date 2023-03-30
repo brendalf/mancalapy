@@ -6,7 +6,7 @@ from typing import Optional
 class Player:
     socket_id: str
     current_game: Optional[str] = None
-    is_playing: bool = False
+    is_playing: Optional[bool] = False
 
     def set_current_game(self, game_id: str) -> None:
         self.is_playing = True

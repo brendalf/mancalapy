@@ -94,7 +94,7 @@ class TestGame(unittest.TestCase):
 
     def test_calculate_movement_plan(self) -> None:
         initial_pit = PitReference(player_id=0, position=2)
-        impacted_pits, stones_captured, player_moves_again = self.game._calculate_movement_plan(initial_pit)
+        impacted_pits, stones_captured, player_moves_again = self.game.calculate_movement_plan(initial_pit)
         
         self.assertEqual(impacted_pits, [PitReference(0, 3), PitReference(0, 4), PitReference(0, 5)])
         self.assertEqual(stones_captured, 1)
@@ -103,7 +103,7 @@ class TestGame(unittest.TestCase):
         self.game.execute_player_movement(0, 2)
 
         initial_pit = PitReference(player_id=0, position=3)
-        impacted_pits, stones_captured, player_moves_again = self.game._calculate_movement_plan(initial_pit)
+        impacted_pits, stones_captured, player_moves_again = self.game.calculate_movement_plan(initial_pit)
 
         self.assertEqual(impacted_pits, [PitReference(0, 4), PitReference(0, 5), PitReference(1, 0), PitReference(1, 1)])
         self.assertEqual(stones_captured, 1)
@@ -112,7 +112,7 @@ class TestGame(unittest.TestCase):
         self.game.execute_player_movement(0, 3)
 
         initial_pit = PitReference(player_id=1, position=4)
-        impacted_pits, stones_captured, player_moves_again = self.game._calculate_movement_plan(initial_pit)
+        impacted_pits, stones_captured, player_moves_again = self.game.calculate_movement_plan(initial_pit)
 
         self.assertEqual(impacted_pits, [PitReference(1, 5), PitReference(0, 0), PitReference(0, 1)])
         self.assertEqual(stones_captured, 1)

@@ -37,7 +37,14 @@ def create_single_player_game(player_socket_id: str) -> None:
 
     active_games[game.get_game_id()] = game
 
-    emit("server", {"game_id": game.get_game_id()})
+    payload = {
+        "game_type": "single",
+        "game_id": game.get_game_id(),
+        "board": game.board.pits,
+        "mancalas": game.board.mancalas
+    }
+
+    emit("game_start", payload)
 
 
 def create_multi_player_game(player_id_0: str, player_id_1: str) -> None:
