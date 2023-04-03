@@ -15,31 +15,32 @@
         </div>
 
         <div id="menu">
-            <button id="start_game" onclick="startSinglePlayerGame()">Start the game</button>
+            <button id="start_game" onclick="startLocalGame()">Start local game</button>
+            <button id="start_online_game" onclick="startOnlineGame()" disabled>Start online game</button>
             <button id="stop_game" onclick="disconnectFromGame()">Disconnect from game</button>
-            <button onclick="showHowToPlay()">How to Play</button>
+            <button onclick="showHowToPlay()">How to play</button>
         </div>
 
         <div id="game">
-            <h3>Player 2</h3>
+            <h3 id="label-1">Player 2</h3>
             <div class="board">
-                <div id="mancala-0" class="mancala player-0"></div>
+                <div id="mancala-1" class="mancala player-1"></div>
                 <div class="pits">
                     {% for player_id in range(2) %}
                     <div class="pit-row">
                         {% for pit in range(6) %}
-                        {% if player_id == 0 %}
-                        <div id="{{ player_id }}-{{ pit }}" class="pit player-{{player_id}}" onmouseover="planMovement()"></div>
+                        {% if player_id == 1 %}
+                        <div id="{{ 1 - player_id }}-{{ pit }}" class="pit player-{{1 - player_id}}" onmouseover="planMovement(this)" onmouseout="removePitHighlight(this)"></div>
                         {% else %}
-                        <div id="{{ player_id }}-{{ pit }}" class="pit player-{{player_id}}"></div>
+                        <div id="{{ 1 - player_id }}-{{ 5 - pit }}" class="pit player-{{1 - player_id}}"></div>
                         {% endif %}
                         {% endfor %}
                     </div>
                     {% endfor %}
                 </div>
-                <div id="mancala-1" class="mancala player-1"></div>
+                <div id="mancala-0" class="mancala player-0"></div>
             </div>
-            <h3>Player 1</h3>
+            <h3 id="label-0">Player 1</h3>
         </div>
 
         <div id="how-to-play" class="invisible">

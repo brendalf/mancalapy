@@ -50,7 +50,9 @@ def create_single_player_game(player_socket_id: str, data: dict) -> None:
         "game_type": "single",
         "game_id": game.get_game_id(),
         "board": game.board.pits,
-        "mancalas": game.board.mancalas
+        "mancalas": game.board.mancalas,
+        "player1": data["player1_name"],
+        "player2": data["player2_name"],
     }
 
     emit("game_start", payload)

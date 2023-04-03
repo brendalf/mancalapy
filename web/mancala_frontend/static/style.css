@@ -55,16 +55,22 @@ p {
     background-color: #9b4b1b;
 }
 
+#start_online_game {
+    cursor: default!important;
+    background-color: gray!important;
+}
+
+#stop_game{
+    display: none;
+}
+
+
 /* GAME */
 #game {
     display: none;
     justify-content: center;
     align-items: center;
     margin-top: 50px;
-}
-
-#stop_game{
-    display: none;
 }
 
 .board {
@@ -103,19 +109,27 @@ p {
     font-size: 30px;
 }
 
-.player-1 {
+.player-0 {
     background-color: #cbf2ab;
     cursor: pointer;
     opacity: 1;
     transition: opacity 0.3s ease-in-out;
 }
 
-.player-1:hover {
-    opacity: 0.75;
+.pit.player-0:hover {
+    background-color: #7aae4f;
 }
 
-.player-0 {
+.player-0.highlight{
+    background-color: #7aae4f;
+}
+
+.player-1 {
     background-color: #ffd2a3;
+}
+
+.pit.player-1.highlight{
+    background-color: #ffb465;
 }
 
 /* HOW TO PLAY */
