@@ -96,6 +96,16 @@ p {
     font-size: 20px;
 }
 
+.board h3 {
+    text-align: center;
+}
+
+#status {
+    text-align: center;
+    font-weight: 300;
+    margin: 14px;
+}
+
 .mancala {
     width: 100px;
     height: 125px;
@@ -129,7 +139,7 @@ p {
 }
 
 .pit.player-1.highlight{
-    background-color: #ffb465;
+    background-color: #d27c22;
 }
 
 /* HOW TO PLAY */

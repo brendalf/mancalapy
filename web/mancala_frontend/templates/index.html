@@ -22,9 +22,11 @@
         </div>
 
         <div id="game">
-            <h3 id="label-1">Player 2</h3>
             <div class="board">
-                <div id="mancala-1" class="mancala player-1"></div>
+                <div>
+                    <div id="mancala-1" class="mancala player-1"></div>
+                    <h3 id="label-1">Player 2</h3>
+                </div>
                 <div class="pits">
                     {% for player_id in range(2) %}
                     <div class="pit-row">
@@ -37,10 +39,13 @@
                         {% endfor %}
                     </div>
                     {% endfor %}
+                    <h4 id="status">Current player: breno</h4>
                 </div>
-                <div id="mancala-0" class="mancala player-0"></div>
+                <div>
+                    <div id="mancala-0" class="mancala player-0"></div>
+                    <h3 id="label-0">Player 1</h3>
+                </div>
             </div>
-            <h3 id="label-0">Player 1</h3>
         </div>
 
         <div id="how-to-play" class="invisible">
