@@ -70,6 +70,32 @@ def on_plan_movement(data):
 
     emit("plan_movement", payload)
 
+def on_move(data):
+    player_socket_id = get_socket_id()
+    player = get_player(player_socket_id)
+
+    # TODO: temporarily
+    if not player.current_game:
+        return
+
+    game_id = player.current_game
+    game = get_active_game(game_id)
+
+    player_id = int(data["player_id"])
+    pit_position = int(data["pit"])
+
+    game.execute_player_movement(player_id, pit_position)
+
+    payload = {
+        "game_type": "single",
+        "game_id": game.get_game_id(),
+        "board": game.board.pits,
+        "mancalas": game.board.mancalas,
+    }
+
+    emit("update_game", payload)
+
+
 
 def on_disconnect():
     player_socket_id = get_socket_id()

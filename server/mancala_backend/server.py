@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from mancala_backend.controller import healthcheck
-from mancala_backend.events import on_connect, on_disconnect, on_start_game, on_disconnect_game, on_plan_movement
+from mancala_backend.events import on_connect, on_disconnect, on_start_game, on_disconnect_game, on_plan_movement, on_move
 from flask import Flask
 from flask_socketio import SocketIO
 
@@ -21,6 +21,7 @@ def define_socket_routes(socket: SocketIO) -> None:
     socket.on_event("start_game", on_start_game)
     socket.on_event("disconnect_game", on_disconnect_game)
     socket.on_event("plan_movement", on_plan_movement)
+    socket.on_event("move", on_move)
 
 
 def define_routes(app: Flask) -> None:

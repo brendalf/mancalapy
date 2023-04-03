@@ -32,7 +32,7 @@
                     <div class="pit-row">
                         {% for pit in range(6) %}
                         {% if player_id == 1 %}
-                        <div id="{{ 1 - player_id }}-{{ pit }}" class="pit player-{{1 - player_id}}" onmouseover="planMovement(this)" onmouseout="removePitHighlight(this)"></div>
+                        <div id="{{ 1 - player_id }}-{{ pit }}" class="pit player-{{1 - player_id}}" onmouseover="planMovement(this)" onmouseout="removePitHighlight(this)" onclick="movePit(this)"></div>
                         {% else %}
                         <div id="{{ 1 - player_id }}-{{ 5 - pit }}" class="pit player-{{1 - player_id}}"></div>
                         {% endif %}

@@ -48,6 +48,12 @@ socket.on("plan_movement", function(data) {
         mancala = document.getElementById("mancala-0");
         mancala.classList.add("highlight");
     }
+});
+
+
+socket.on("update_game", function(data) {
+    updateBoard(data["board"]);
+    updateMancalas(data["mancalas"]);
 })
 
 function updateBoard(pits) {
@@ -138,10 +144,10 @@ function disconnectFromGame() {
     socket.emit("disconnect_game", {game_id: GAME_ID});
 }
 
-function showHowToPlay() {
+function toggleHowToPlaySection() {
     var section = document.getElementById("how-to-play");
 
-    if (HOW_TO_PLAY == false) {
+    if (HOW_TO_PLAY === false) {
         section.style.display = "block";
         HOW_TO_PLAY = true;
     } else {
@@ -150,7 +156,9 @@ function showHowToPlay() {
     }
 }
 
-function myFunction() {
-    socket.emit("plan_move", {game: "game_id", player: 0, pit: 1});
+function movePit(element) {
+    var id = element.id.split("-");
+    var player_id = id[0];
+    var pit = id[1];
+    socket.emit("move", { "player_id": player_id, "pit": pit });
 }
-
