@@ -27,13 +27,22 @@ def is_player_in_game(player_id: str) -> bool:
 
     return players[player_id].is_playing
 
+def get_player(player_id: str) -> Player:
+    return players[player_id]
 
-def create_single_player_game(player_socket_id: str) -> None:
+def get_active_game(game_id: str) -> MancalaGame:
+    return active_games[game_id]
+
+def delete_game(game_id: str) -> None:
+    del active_games[game_id]
+
+def create_single_player_game(player_socket_id: str, data: dict) -> None:
+    print("creating game")
     player = players[player_socket_id]
 
     game = MancalaGame() 
 
-    player.set_current_game(game.id)
+    player.set_current_game(game.get_game_id())
 
     active_games[game.get_game_id()] = game
 
@@ -65,7 +74,7 @@ def create_multi_player_game(player_id_0: str, player_id_1: str) -> None:
     return None
 
 
-def add_player_to_waiting_list(player_socket_id: str) -> None:
+def add_player_to_waiting_list(player_socket_id: str, _: dict) -> None:
     waiting_list.append(player_socket_id)
     match_players_in_waiting_list()
 
@@ -80,10 +89,9 @@ def match_players_in_waiting_list() -> None:
 
 def healthcheck():
     return {
-        "active_games": {
-            game_id: (game.player_one, game.player_two)
-            for game_id, game in active_games.items()
-        },
+        "active_games": [
+            game_id for game_id in active_games.keys()
+        ],
         "players": [player for player in players],
         "waiting_list": [id for id in waiting_list],
     }
