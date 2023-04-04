@@ -6,6 +6,8 @@ Mancala game implemmented in Python.
 
 > "The mancala games are a family of two-player turn-based strategy board games played with small stones, beans, or seeds and rows of holes or pits in the earth, a board or other playing surface. The objective is usually to capture all or some set of the opponent's pieces. Versions of the game date back past the 3rd century and evidence suggests the game existed in Ancient Egypt. It is among the oldest known games to still be widely played today." ([Wikipedia](https://en.wikipedia.org/wiki/Mancala))
 
+<img width="819" alt="image" src="https://user-images.githubusercontent.com/10671410/229739375-3a296ab6-9f1f-4f22-9c77-23b0b8466256.png">
+
 ## How to start the game
 
 1. Clone this repository.
