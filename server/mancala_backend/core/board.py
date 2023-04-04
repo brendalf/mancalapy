@@ -88,6 +88,18 @@ class Board:
         """
         return sum(self.pits[player_id])
 
+    def zero_stones_in_pits(self, player_id: int) -> None:
+        """
+        Update all pits with 0 stones.
+
+        Parameters
+        ----------
+        player_id : int
+            The ID of the player whose total number of stones to get.
+        """
+        for i in range(self.num_pits):
+            self.pits[player_id][i] = 0
+
     def get_opposite_pit_position(self, pit: PitReference) -> int:
         """
         Gets the position of the opposite pit for the given pit.

@@ -58,6 +58,29 @@ class MancalaGame:
 
         return False
 
+    def finish(self) -> None:
+        """
+        Finish game, moving stones still available in pits to the scores.
+        """
+        for player_id in range(self.num_players):
+            stones = self.board.get_total_stones_in_players_pits(player_id)
+
+            if stones > 0:
+                score = self.board.get_score(player_id) + stones
+                self.board.update_score(player_id, score)
+
+            self.board.zero_stones_in_pits(player_id)
+
+    def get_winner(self) -> int:
+        """
+        Gets the player id of the winner who won the match.
+        """
+        if not self.has_game_ended():
+            raise ValueError("Game is still running. No winner defined.")
+
+        max_score = max(self.board.mancalas)
+        return self.board.mancalas.index(max_score)
+
     def execute_player_movement(self, player_moving: int, selected_pit: int) -> None:
         """
         Executes a player movement.
@@ -107,13 +130,17 @@ class MancalaGame:
             last_pit = impacted_pits[-1]
             stones_last_pit = self.board.get_stones_from_pit(last_pit)
 
-            # last stone was placed in a empty pit from the player
-            if (stones_last_pit == 1) and (last_pit.player_id == player_moving):
-                oposite_pit = PitReference(
-                    player_id=self._define_next_player(last_pit.player_id),
-                    position=self.board.get_opposite_pit_position(last_pit),
-                )
+            oposite_pit = PitReference(
+                player_id=self._define_next_player(last_pit.player_id),
+                position=self.board.get_opposite_pit_position(last_pit),
+            )
 
+            # last stone was placed in a empty pit from the player
+            if (
+                (stones_last_pit == 1)
+                and (self.board.get_stones_from_pit(oposite_pit) > 0)
+                and (last_pit.player_id == player_moving)
+            ):
                 # capture the stone added and all the stones in the opposite pit.
                 stones_captured += self.board.get_stones_from_pit(oposite_pit) + 1
 

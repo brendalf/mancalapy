@@ -1,85 +1,47 @@
+from flask import request
 from flask_socketio import emit
 
 from mancala_backend.controller import (
-    add_player_connection,
-    add_player_to_waiting_list,
-    create_single_player_game,
-    delete_game,
-    get_active_game,
-    get_player,
-    get_socket_id,
-    is_player_in_game,
+    add_user_connection,
+    add_user_to_waiting_list,
+    create_single_user_game,
+    delete_session,
+    delete_user,
+    get_session,
+    get_session_from_user,
+    get_user,
+    is_session_active,
+    is_user_playing,
 )
-from mancala_backend.core.pit import PitReference
 
-game_types = {"single": create_single_player_game, "multi": add_player_to_waiting_list}
+GAME_TYPES = {"single": create_single_user_game, "multi": add_user_to_waiting_list}
+
+
+def get_socket_id() -> str:
+    return request.sid
 
 
 def on_connect():
-    player_socket_id = get_socket_id()
+    user_socket_id = get_socket_id()
 
-    add_player_connection(player_socket_id)
-
-    print(f"user {player_socket_id} connected")
-    emit("server", {"data": "connected"}, to=player_socket_id)
+    add_user_connection(user_socket_id)
 
 
-def on_start_game(data: dict):
-    player_socket_id = get_socket_id()
+def on_disconnect():
+    user_socket_id = get_socket_id()
 
-    if "type" not in data:
-        raise ValueError(
-            "You need to provide the game type before starting a new game."
-        )
+    user = get_user(user_socket_id)
 
-    if is_player_in_game(player_socket_id):
-        raise ValueError("User currently playing a game. Can't start a new one.")
+    if is_user_playing(user_socket_id):
+        game_id = user.current_game
 
-    game_type = data["type"]
+        session = get_session(game_id)
 
-    if game_type not in game_types:
-        raise ValueError(f"The game type {game_type} isn't available.")
+        session.disconnect()
 
-    game_types[game_type](player_socket_id, data)
+        delete_session(game_id)
 
-
-def on_disconnect_game(data):
-    if get_active_game(data["game_id"]):
-        delete_game(data["game_id"])
-
-    # TODO: get which game the player is currently in
-    # TODO: call game controller disconnect
-
-    emit("game_disconnect")
-
-
-def on_plan_movement(data):
-    player_socket_id = get_socket_id()
-    player = get_player(player_socket_id)
-
-    # TODO: temporarily
-    if not player.current_game:
-        return
-
-    game_id = player.current_game
-    game = get_active_game(game_id)
-
-    pit = PitReference(int(data["player_id"]), int(data["pit"]))
-    movement = game.calculate_movement_plan(pit)
-
-    plan = [
-        {"player_id": pit_reference.player_id, "position": pit_reference.position}
-        for pit_reference in movement[0]
-    ]
-
-    payload = {
-        "game_type": "single",
-        "game_id": game.get_game_id(),
-        "movement": plan,
-        "captured_stones": movement[1],
-    }
-
-    emit("plan_movement", payload)
+    delete_user(user_socket_id)
 
 
 def on_error(exception: Exception) -> None:
@@ -87,50 +49,53 @@ def on_error(exception: Exception) -> None:
     emit("error", {"message": str(exception)})
 
 
-def on_move(data):
-    player_socket_id = get_socket_id()
-    player = get_player(player_socket_id)
+def on_start_game(data: dict):
+    user_socket_id = get_socket_id()
 
-    # TODO: temporarily
-    if not player.current_game:
+    if "type" not in data:
+        raise ValueError(
+            "You need to provide the game type before starting a new game."
+        )
+
+    if is_user_playing(user_socket_id):
+        raise ValueError("User currently playing a game. Can't start a new one.")
+
+    game_type = data["type"]
+
+    if game_type not in GAME_TYPES:
+        raise ValueError(f"The game type {game_type} isn't available.")
+
+    GAME_TYPES[game_type](user_socket_id, data)
+
+
+def on_disconnect_game(data):
+    user_socket_id = get_socket_id()
+    game_id = data["game_id"]
+
+    if not is_session_active(game_id):
+        user = get_user(user_socket_id)
+        user.disconnect_from_game()
         return
 
-    game_id = player.current_game
-    game = get_active_game(game_id)
+    session = get_session(data["game_id"])
+    session.disconnect()
 
-    player_id = int(data["player_id"])
-    pit_position = int(data["pit"])
-
-    game.execute_player_movement(player_id, pit_position)
-
-    payload = {
-        "game_type": "single",
-        "game_id": game.get_game_id(),
-        "board": game.board.pits,
-        "mancalas": game.board.mancalas,
-    }
-
-    emit("update_game", payload)
+    delete_session(data["game_id"])
 
 
-def on_disconnect():
-    player_socket_id = get_socket_id()
+def on_plan_movement(data):
+    user_socket_id = get_socket_id()
 
-    player = get_player(player_socket_id)
+    session = get_session_from_user(user_socket_id)
 
-    if player.is_playing:
-        game_id = player.current_game
+    if session:
+        session.get_movement_plan(data["player_id"], data["pit"])
 
-        game = get_active_game(game_id)
 
-        # game.disconnect()
+def on_move(data):
+    user_socket_id = get_socket_id()
 
-        delete_game(game_id)
+    session = get_session_from_user(user_socket_id)
 
-    # if player_socket_id in players:
-    #     del players[player_socket_id]
-    #     print(f"removing user {player_socket_id}")
-
-    print(f"user {player_socket_id} disconnected")
-
-    emit("server", {"data": "disconnected"}, to=player_socket_id)
+    if session:
+        session.execute_player_move(user_socket_id, data["player_id"], data["pit"])

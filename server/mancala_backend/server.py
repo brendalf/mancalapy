@@ -17,7 +17,6 @@ from mancala_backend.events import (
 
 def create_server() -> Tuple[Flask, SocketIO]:
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "some-super-secret-key"
 
     socket = SocketIO(
         app,

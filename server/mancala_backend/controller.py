@@ -1,102 +1,110 @@
 from collections import deque
+from typing import Optional
 
-from flask import request
-from flask_socketio import emit, join_room
+from flask_socketio import emit
 
-from mancala_backend.core import MancalaGame
-from mancala_backend.models.game import Game
-from mancala_backend.models.player import Player
+from mancala_backend.core.game import MancalaGame
+from mancala_backend.models import User
+from mancala_backend.models.session import Session, SingleUserSession
 
-active_games = dict()
-players = dict()
+active_sessions = dict()
+users = dict()
 waiting_list = deque()
 
 
-def get_socket_id() -> str:
-    return request.sid
+def add_user_connection(user_socket_id: str) -> None:
+    user = User(user_socket_id)
+
+    users[user.socket_id] = user
+
+    print(f"user {user_socket_id} connected")
+    emit("server", {"data": "connected"}, to=user_socket_id)
 
 
-def add_player_connection(player_socket_id: str) -> None:
-    player = Player(player_socket_id)
-
-    players[player.socket_id] = player
-
-
-def is_player_in_game(player_id: str) -> bool:
-    if player_id not in players:
+def is_user_playing(user_socket_id: str) -> bool:
+    if user_socket_id not in users:
         return False
 
-    return players[player_id].is_playing
+    return get_user(user_socket_id).is_playing
 
 
-def get_player(player_id: str) -> Player:
-    return players[player_id]
+def get_user(user_socket_id: str) -> User:
+    return users[user_socket_id]
 
 
-def get_active_game(game_id: str) -> MancalaGame:
-    return active_games.get(game_id, None)
+def delete_user(user_socket_id: str) -> None:
+    del users[user_socket_id]
 
 
-def delete_game(game_id: str) -> None:
-    del active_games[game_id]
+def get_session_from_user(user_socket_id: str) -> Optional[Session]:
+    user = get_user(user_socket_id)
+    game_id = user.current_game
+
+    if not game_id:
+        user.disconnect_from_game()
+        return None
+
+    return get_session(game_id)
 
 
-def create_single_player_game(player_socket_id: str, data: dict) -> None:
-    print("creating game")
-    player = players[player_socket_id]
-
-    game = MancalaGame()
-
-    player.set_current_game(game.get_game_id())
-
-    active_games[game.get_game_id()] = game
-
-    payload = {
-        "game_type": "single",
-        "game_id": game.get_game_id(),
-        "board": game.board.pits,
-        "mancalas": game.board.mancalas,
-        "player1": data["player1_name"],
-        "player2": data["player2_name"],
-    }
-
-    emit("game_start", payload)
+def is_session_active(session_id: str) -> bool:
+    return session_id in active_sessions
 
 
-def create_multi_player_game(player_id_0: str, player_id_1: str) -> None:
-    player0 = players[player_id_0]
-    player1 = players[player_id_1]
-
-    # game = Game(p0, p1)
-
-    # join_room(game.game_id, p0.socket_id)
-    # join_room(game.game_id, p1.socket_id)
-
-    # emit("server", {"data": f"starting game {game.game_id}"}, to=game.game_id)
-
-    # print(f"starting game {game.game_id}: {p0} x {p1}")
-
-    # active_games[game.game_id] = game
-
-    return None
+def get_session(session_id: str) -> Session:
+    return active_sessions[session_id]
 
 
-def add_player_to_waiting_list(player_socket_id: str, _: dict) -> None:
-    waiting_list.append(player_socket_id)
-    match_players_in_waiting_list()
+def delete_session(session_id: str) -> None:
+    session = get_session(session_id)
+    session.disconnect()
+
+    del active_sessions[session_id]
 
 
-def match_players_in_waiting_list() -> None:
+def create_single_user_game(user_socket_id: str, data: dict) -> None:
+    user = get_user(user_socket_id)
+
+    session = SingleUserSession(
+        user=user,
+        players=[data["player1_name"], data["player2_name"]],
+        game=MancalaGame(),
+    )
+
+    active_sessions[session.get_id()] = session
+    session.start_session()
+
+
+def create_multi_user_game(user1_socket_id: str, user2_socket_id: str) -> None:
+    pass
+    # user1 = users[user1_socket_id]
+    # user2 = users[user2_socket_id]
+
+    # session = MultiUserSession(
+    #     users=[user1, user2],
+    #     game=MancalaGame()
+    # )
+
+    # active_sessions[session.get_id()] = session
+    # session.start_session()
+
+
+def add_user_to_waiting_list(user_socket_id: str, _: dict) -> None:
+    waiting_list.append(user_socket_id)
+    match_users_in_waiting_list()
+
+
+def match_users_in_waiting_list() -> None:
     while len(waiting_list) >= 2:
-        player_id_0 = waiting_list.pop()
-        player_id_1 = waiting_list.pop()
+        user1_socket_id = waiting_list.pop()
+        user2_socket_id = waiting_list.pop()
 
-        create_multi_player_game(player_id_0, player_id_1)
+        create_multi_user_game(user1_socket_id, user2_socket_id)
 
 
 def healthcheck():
     return {
-        "active_games": [game_id for game_id in active_games.keys()],
-        "players": [player for player in players],
-        "waiting_list": [id for id in waiting_list],
+        "active_sessions": [game_id for game_id in active_sessions.keys()],
+        "users": [user for user in users],
+        "waiting_list": [user_socket_id for user_socket_id in waiting_list],
     }

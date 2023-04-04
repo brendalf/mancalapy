@@ -48,36 +48,44 @@ socket.on("server", (data) => {
 	console.log(data);
 });
 
-socket.on("game_start", (data) => {
-	IN_GAME = true;
-	GAME_ID = data.game_id;
-	CURRENT_PLAYER = data.player1;
+socket.on("update_game", (data) => {
+	console.log(data);
 
-	displayGameSection();
+    IN_GAME = true;
+    GAME_ID = data["game_id"];
 
-	updateTurnDisplay();
+    const players = data["players"];
 
-	const player1 = document.getElementById("label-0");
-	player1.innerHTML = data.player1;
+    for(let i = 0; i < players.length; i++) {
+        const element = document.getElementById(`label-${i}`);
+        element.innerText = players[i];
+    }
 
-	const player2 = document.getElementById("label-1");
-	player2.innerHTML = data.player2;
-
-	enableCurrentPlayerPits();
-
+    displayGameSection();
 	updateBoard(data.board);
 	updateMancalas(data.mancalas);
+
+    CURRENT_PLAYER = data["players"][data["current_player"]];
+
+    // Update state and view
+    if(data["game_state"] === "GAME_FINISHED") {
+        const display = document.getElementById("status");
+        display.innerHTML = `Winner: ${data["winner"]}`;
+    }
+    
+    if(data["game_state"] === "IN_GAME") {
+        enableCurrentPlayerPits(data["current_player"]);
+        updateTurnDisplay();
+    }
 });
 
-socket.on("game_disconnect", () => {
+socket.on("disconnect_game", () => {
 	IN_GAME = false;
 	GAME_ID = "";
 	hideGameSection();
 });
 
 socket.on("plan_movement", (data) => {
-	console.log(data);
-
 	data.movement.forEach((item) => {
 		const elementId = `${item.player_id}-${item.position}`;
 		const pit = document.getElementById(elementId);
@@ -85,19 +93,9 @@ socket.on("plan_movement", (data) => {
 	});
 
 	if (data.captured_stones > 0) {
-		const currentPlayer = CURRENT_PLAYER === "breno" ? 0 : 1;
-		const mancala = document.getElementById(`mancala-${currentPlayer}`);
+		const mancala = document.getElementById(`mancala-${data["current_player"]}`);
 		mancala.classList.add("highlight");
 	}
-});
-
-socket.on("update_game", (data) => {
-	updateBoard(data.board);
-	updateMancalas(data.mancalas);
-
-	CURRENT_PLAYER = "tomas";
-	enableCurrentPlayerPits();
-	updateTurnDisplay();
 });
 
 // **************************
@@ -145,9 +143,8 @@ function movePit(event) {
     removePitHighlight();
 
     var id = event.target.id.split("-");
-    var player_id = id[0];
     var pit = id[1];
-    socket.emit("move", { "player_id": player_id, "pit": pit });
+    socket.emit("move", { "player_id": CURRENT_PLAYER, "pit": pit });
 }
 
 // **************************
@@ -181,9 +178,7 @@ function removePitHighlight() {
 	});
 }
 
-function enableCurrentPlayerPits() {
-	const currentPlayer = CURRENT_PLAYER === "breno" ? 0 : 1;
-
+function enableCurrentPlayerPits(currentPlayer) {
 	// remove the "active" class
 	const allPits = document.querySelectorAll(".pit.active");
 	allPits.forEach((item) => {

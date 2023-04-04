@@ -117,6 +117,30 @@ class TestGame(unittest.TestCase):
         self.assertEqual(impacted_pits, [PitReference(1, 5), PitReference(0, 0), PitReference(0, 1)])
         self.assertEqual(stones_captured, 1)
         self.assertFalse(player_moves_again)
+    
+    def test_get_winner(self) -> None:
+        with self.assertRaises(ValueError):
+            self.game.get_winner()
+
+        self.game.board.pits = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0],
+        ]
+
+        self.assertEqual(self.game.get_winner(), 0)
+
+    def test_finish(self) -> None:
+        self.game.board.mancalas = [10, 8]
+        self.game.board.pits = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 4, 0, 0],
+        ]
+
+        self.game.finish()
+
+        self.assertEqual(self.game.board.pits, [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]])
+        self.assertEqual(self.game.board.mancalas, [10, 13])
+
 
 if __name__ == '__main__':
     unittest.main()

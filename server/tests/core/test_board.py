@@ -41,6 +41,11 @@ class TestBoard(unittest.TestCase):
         for pit, opposite_pit_position in pits.items():
             self.assertEqual(self.board.get_opposite_pit_position(pit), opposite_pit_position)
 
+    def test_zero_stones_in_pits(self) -> None:
+        self.board.zero_stones_in_pits(0)
+
+        self.assertEqual(self.board.pits[0], [0, 0, 0, 0, 0, 0])
+
     def test_update_pit(self) -> None:
         pit0 = PitReference(player_id=0, position=2)
         pit1 = PitReference(player_id=1, position=0)
