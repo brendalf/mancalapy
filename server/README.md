@@ -14,11 +14,17 @@ The backend has of two main parts, the `core` and the `api`.
   * The server also exposes a `/healthcheck` endpoint where we can check the list of players connected and the active games.
 
 The image below describes how both parts interact together:  
+
 <img width="700" alt="image" src="https://user-images.githubusercontent.com/10671410/229759616-44ae1147-785a-43c8-b030-8fb0556b50dc.jpg">
 
 ## Structure
 `mancala_backend/`: source code folder.  
--- `core/`: the mancala game core logic.  
+-- `core/`: the mancala game core logic.
+-- `models/`: the api classes.
 -- `events.py`: all the events the server is listening for.  
 -- `server.py`: helper functions to create the server routes.  
 -- `controller.py`: the controller that translates events into in-game actions.
+
+The image below describes how these parts interact together:
+
+<img width="700" alt="image" src="https://user-images.githubusercontent.com/10671410/229940497-d9c99aef-f8fe-4e65-b8dc-a22928a51f81.jpg">
