@@ -19,8 +19,8 @@ The image below describes how both parts interact together:
 
 ## Structure
 `mancala_backend/`: source code folder.  
--- `core/`: the mancala game core logic.
--- `models/`: the api classes.
+-- `core/`: the mancala game core logic.  
+-- `models/`: the api classes.  
 -- `events.py`: all the events the server is listening for.  
 -- `server.py`: helper functions to create the server routes.  
 -- `controller.py`: the controller that translates events into in-game actions.
