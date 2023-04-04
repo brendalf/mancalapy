@@ -1,3 +1,6 @@
+// **************************
+// **** GLOBAL VARIABLES ****
+// **************************
 let HOW_TO_PLAY = false;
 let IN_GAME = false;
 let GAME_ID = "";
@@ -6,6 +9,9 @@ let CURRENT_PLAYER = 0;
 const socket = io("http://127.0.0.1:8000");
 const server_status = document.getElementById("server_status");
 
+// **************************
+// ****      SOCKET      ****
+// **************************
 socket.on("connect", () => {
     server_status.innerText = "Server: Connected";
 });
@@ -27,8 +33,6 @@ socket.on("server", (data) => {
 });
 
 socket.on("game_start", (data) => {
-	console.log(data);
-
 	IN_GAME = true;
 	GAME_ID = data.game_id;
 	CURRENT_PLAYER = data.player1;
@@ -80,6 +84,59 @@ socket.on("update_game", (data) => {
 	updateTurnDisplay();
 });
 
+// **************************
+// ****   USER ACTIONS   ****
+// **************************
+function startLocalGame() {
+    p1_name = prompt("Enter player one name:");
+    p2_name = prompt("Enter player two name:");
+
+    socket.emit("start_game", {type: "single", player1_name: p1_name, player2_name: p2_name});
+}
+
+function startOnlineGame() {
+    alert("This is still a working in progress");
+}
+
+function disconnectFromGame() {
+    if (GAME_ID === "") {
+        hideGameSection();
+    }
+
+    socket.emit("disconnect_game", {game_id: GAME_ID});
+}
+
+function toggleHowToPlaySection() {
+    var section = document.getElementById("how-to-play");
+
+    if (HOW_TO_PLAY === false) {
+        section.style.display = "block";
+        HOW_TO_PLAY = true;
+    } else {
+        section.style.display = "none";
+        HOW_TO_PLAY = false;
+    }
+}
+
+function planMovement(event) {
+	const id = event.target.id.split("-");
+	const player_id = id[0];
+	const pit = id[1];
+	socket.emit("plan_movement", { player_id, pit });
+}
+
+function movePit(event) {
+    removePitHighlight();
+
+    var id = event.target.id.split("-");
+    var player_id = id[0];
+    var pit = id[1];
+    socket.emit("move", { "player_id": player_id, "pit": pit });
+}
+
+// **************************
+// **** UPDATE GAME VIEW ****
+// **************************
 function updateTurnDisplay() {
 	const display = document.getElementById("status");
 	display.innerHTML = `Current player: ${CURRENT_PLAYER}`;
@@ -99,13 +156,6 @@ function updateMancalas(mancalas) {
 		const mancalaReference = `mancala-${playerID}`;
 		document.getElementById(mancalaReference).innerHTML = mancalas[playerID];
 	}
-}
-
-function planMovement(event) {
-	const id = event.target.id.split("-");
-	const player_id = id[0];
-	const pit = id[1];
-	socket.emit("plan_movement", { player_id, pit });
 }
 
 function removePitHighlight() {
@@ -163,44 +213,4 @@ function displayMenu() {
 
     const btEnd = document.getElementById("stop_game");
     btEnd.style.display = "none";
-}
-
-function startLocalGame() {
-    p1_name = prompt("Enter player one name:");
-    p2_name = prompt("Enter player two name:");
-
-    socket.emit("start_game", {type: "single", player1_name: p1_name, player2_name: p2_name});
-}
-
-function startOnlineGame() {
-    alert("This is still a working in progress");
-}
-
-function disconnectFromGame() {
-    if (GAME_ID === "") {
-        hideGameSection();
-    }
-
-    socket.emit("disconnect_game", {game_id: GAME_ID});
-}
-
-function toggleHowToPlaySection() {
-    var section = document.getElementById("how-to-play");
-
-    if (HOW_TO_PLAY === false) {
-        section.style.display = "block";
-        HOW_TO_PLAY = true;
-    } else {
-        section.style.display = "none";
-        HOW_TO_PLAY = false;
-    }
-}
-
-function movePit(event) {
-    removePitHighlight();
-
-    var id = event.target.id.split("-");
-    var player_id = id[0];
-    var pit = id[1];
-    socket.emit("move", { "player_id": player_id, "pit": pit });
 }
