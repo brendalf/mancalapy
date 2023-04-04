@@ -2,10 +2,20 @@ let HOW_TO_PLAY = false;
 let IN_GAME = false;
 let GAME_ID = "";
 let CURRENT_PLAYER = 0;
+
 const socket = io("http://127.0.0.1:8000");
+const server_status = document.getElementById("server_status");
 
 socket.on("connect", () => {
-	console.log("recovered?", socket.recovered);
+    server_status.innerText = "Server: Connected";
+});
+
+socket.on("disconnect", () => {
+    server_status.innerText = "Server: Disconnected";
+});
+
+socket.on("connect_error", () => {
+    server_status.innerText = "Server: Connection Error";
 });
 
 socket.on("server", (data) => {
@@ -159,12 +169,10 @@ function startLocalGame() {
 }
 
 function startOnlineGame() {
-    console.log("WIP");
+    alert("This is still a working in progress");
 }
 
 function disconnectFromGame() {
-    console.log(GAME_ID);
-
     if (GAME_ID === "") {
         hideGameSection();
     }
