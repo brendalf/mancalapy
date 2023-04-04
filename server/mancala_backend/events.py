@@ -83,6 +83,11 @@ def on_plan_movement(data):
     emit("plan_movement", payload)
 
 
+def on_error(exception: Exception) -> None:
+    print(exception)
+    emit("error", {"message": str(exception)})
+
+
 def on_move(data):
     player_socket_id = get_socket_id()
     player = get_player(player_socket_id)

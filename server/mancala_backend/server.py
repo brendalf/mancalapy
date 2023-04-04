@@ -8,6 +8,7 @@ from mancala_backend.events import (
     on_connect,
     on_disconnect,
     on_disconnect_game,
+    on_error,
     on_move,
     on_plan_movement,
     on_start_game,
@@ -35,6 +36,7 @@ def define_socket_routes(socket: SocketIO) -> None:
     socket.on_event("disconnect_game", on_disconnect_game)
     socket.on_event("plan_movement", on_plan_movement)
     socket.on_event("move", on_move)
+    socket.on_error_default(on_error)
 
 
 def define_routes(app: Flask) -> None:

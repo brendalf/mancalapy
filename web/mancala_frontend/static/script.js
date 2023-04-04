@@ -18,6 +18,10 @@ socket.on("connect_error", () => {
     server_status.innerText = "Server: Connection Error";
 });
 
+socket.on("error", (data) => {
+    alert(data["message"]);
+});
+
 socket.on("server", (data) => {
 	console.log(data);
 });
