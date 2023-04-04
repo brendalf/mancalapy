@@ -14,14 +14,30 @@ const server_status = document.getElementById("server_status");
 // **************************
 socket.on("connect", () => {
     server_status.innerText = "Server: Connected";
+
+    document.getElementById("start_game").classList.remove("disabled");
 });
 
 socket.on("disconnect", () => {
     server_status.innerText = "Server: Disconnected";
+
+    IN_GAME = false;
+    GAME_ID = "";
+
+    document.getElementById("start_game").classList.add("disabled");
+
+    displayMenu();
 });
 
 socket.on("connect_error", () => {
     server_status.innerText = "Server: Connection Error";
+
+    IN_GAME = false;
+    GAME_ID = "";
+
+    document.getElementById("start_game").classList.add("disabled");
+
+    displayMenu();
 });
 
 socket.on("error", (data) => {

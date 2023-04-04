@@ -34,7 +34,7 @@ def get_player(player_id: str) -> Player:
 
 
 def get_active_game(game_id: str) -> MancalaGame:
-    return active_games[game_id]
+    return active_games.get(game_id, None)
 
 
 def delete_game(game_id: str) -> None:

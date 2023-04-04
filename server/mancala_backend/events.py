@@ -1,6 +1,4 @@
-from collections import deque
-
-from flask_socketio import close_room, disconnect, emit
+from flask_socketio import emit
 
 from mancala_backend.controller import (
     add_player_connection,
@@ -46,7 +44,8 @@ def on_start_game(data: dict):
 
 
 def on_disconnect_game(data):
-    delete_game(data["game_id"])
+    if get_active_game(data["game_id"]):
+        delete_game(data["game_id"])
 
     # TODO: get which game the player is currently in
     # TODO: call game controller disconnect
