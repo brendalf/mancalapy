@@ -34,6 +34,6 @@ The project is structured in two main folders:
 ## Developer instructions
 
 Each folder is a separately poetry project. You'll find more about the technical implementation in each folder's readme.  
-Run `make setup` inside each folder to setup your local development environment.  
-This command will also install the pre-commit hooks used to guarantee code standards.  
+Run `poetry install` inside each folder to setup your local development environment.  
+For the `server` folder, there is a `make code_review` command available to guarantee code standards.  
 After that, you can run `poetry shell` to start a shell session with the environment configured.
