@@ -1,125 +1,153 @@
-var HOW_TO_PLAY = false;
-var IN_GAME = false;
-var GAME_ID = "";
+let HOW_TO_PLAY = false;
+let IN_GAME = false;
+let GAME_ID = "";
+let CURRENT_PLAYER = 0;
+const socket = io("http://127.0.0.1:8000");
 
-var socket = io("http://127.0.0.1:8000");
-
-socket.on("connect", function() {
-    console.log("recovered?", socket.recovered);
+socket.on("connect", () => {
+	console.log("recovered?", socket.recovered);
 });
 
-socket.on("server", function(data) {
-    console.log(data);
+socket.on("server", (data) => {
+	console.log(data);
 });
 
-socket.on("game_start", function(data) {
-    console.log(data);
+socket.on("game_start", (data) => {
+	console.log(data);
 
-    IN_GAME = true;
-    GAME_ID = data["game_id"]
+	IN_GAME = true;
+	GAME_ID = data.game_id;
+	CURRENT_PLAYER = data.player1;
 
-    startGame();
+	displayGameSection();
 
-    player1 = document.getElementById("label-0");
-    player1.innerHTML = data["player1"];
+	updateTurnDisplay();
 
-    player2 = document.getElementById("label-1");
-    player2.innerHTML = data["player2"];
+	const player1 = document.getElementById("label-0");
+	player1.innerHTML = data.player1;
 
-    updateBoard(data["board"]);
-    updateMancalas(data["mancalas"]);
+	const player2 = document.getElementById("label-1");
+	player2.innerHTML = data.player2;
+
+	enableCurrentPlayerPits();
+
+	updateBoard(data.board);
+	updateMancalas(data.mancalas);
 });
 
-socket.on("game_disconnect", function() {
-    IN_GAME = false;
-    GAME_ID = ""
-
-    disconnect();
+socket.on("game_disconnect", () => {
+	IN_GAME = false;
+	GAME_ID = "";
+	hideGameSection();
 });
 
-socket.on("plan_movement", function(data) {
-    data["movement"].forEach(function(item) {
-        elementId = item["player_id"] + "-" + item["position"];
-        pit = document.getElementById(elementId);
-        pit.classList.add("highlight");
-    });
+socket.on("plan_movement", (data) => {
+	console.log(data);
 
-    if (data["captured_stones"] > 0) {
-        mancala = document.getElementById("mancala-0");
-        mancala.classList.add("highlight");
-    }
+	data.movement.forEach((item) => {
+		const elementId = `${item.player_id}-${item.position}`;
+		const pit = document.getElementById(elementId);
+		pit.classList.add("highlight");
+	});
+
+	if (data.captured_stones > 0) {
+		const currentPlayer = CURRENT_PLAYER === "breno" ? 0 : 1;
+		const mancala = document.getElementById(`mancala-${currentPlayer}`);
+		mancala.classList.add("highlight");
+	}
 });
 
+socket.on("update_game", (data) => {
+	updateBoard(data.board);
+	updateMancalas(data.mancalas);
 
-socket.on("update_game", function(data) {
-    updateBoard(data["board"]);
-    updateMancalas(data["mancalas"]);
-})
+	CURRENT_PLAYER = "tomas";
+	enableCurrentPlayerPits();
+	updateTurnDisplay();
+});
 
-function updateBoard(pits) {
-    for (var playerID in pits) {
-        for (var pit in pits[playerID]) {
-            pitReference = playerID + "-" + pit;
+function updateTurnDisplay() {
+	const display = document.getElementById("status");
+	display.innerHTML = `Current player: ${CURRENT_PLAYER}`;
+}
 
-            document.getElementById(pitReference).innerHTML = pits[playerID][pit];
-        }
-    }
+function updateBoard(playerPits) {
+	for (const playerIndex in playerPits) {
+		for (const pit in playerPits[playerIndex]) {
+			const pitReference = `${playerIndex}-${pit}`;
+			document.getElementById(pitReference).innerHTML = playerPits[playerIndex][pit];
+		}
+	}
 }
 
 function updateMancalas(mancalas) {
-    for (var playerID in mancalas) {
-        mancalaReference = "mancala-" + playerID;
-
-        document.getElementById(mancalaReference).innerHTML = mancalas[playerID];
-    }
+	for (const playerID in mancalas) {
+		const mancalaReference = `mancala-${playerID}`;
+		document.getElementById(mancalaReference).innerHTML = mancalas[playerID];
+	}
 }
 
-function planMovement(element) {
-    var id = element.id.split("-");
-    var player_id = id[0];
-    var pit = id[1];
-    socket.emit("plan_movement", { "player_id": player_id, "pit": pit });
+function planMovement(event) {
+	const id = event.target.id.split("-");
+	const player_id = id[0];
+	const pit = id[1];
+	socket.emit("plan_movement", { player_id, pit });
 }
 
 function removePitHighlight() {
-    selection = document.getElementsByClassName("highlight");
-    elements_with_highlight = [];
-
-    for(var i = 0; i < selection.length; i++) {
-        elements_with_highlight.push(selection[i]);
-    }
-
-    for(var i = 0; i < elements_with_highlight.length; i++) {
-        item = elements_with_highlight[i];
-        item.classList.remove("highlight");
-    }
+	const elementsWithHighlight = document.querySelectorAll(".highlight");
+	elementsWithHighlight.forEach((item) => {
+		item.classList.remove("highlight");
+	});
 }
 
-function startGame() {
-    var game = document.getElementById("game");
+function enableCurrentPlayerPits() {
+	const currentPlayer = CURRENT_PLAYER === "breno" ? 0 : 1;
+
+	// remove the "active" class
+	const allPits = document.querySelectorAll(".pit.active");
+	allPits.forEach((item) => {
+		item.classList.remove("active");
+		item.removeEventListener("click", movePit);
+		item.removeEventListener("mouseover", planMovement);
+		item.removeEventListener("mouseout", removePitHighlight);
+	});
+
+	// add the "active" class to the current player's pits
+	const currentPits = document.querySelectorAll(`.pit.player-${currentPlayer}`);
+	currentPits.forEach((item) => {
+		item.classList.add("active");
+		item.addEventListener("click", movePit);
+		item.addEventListener("mouseover", planMovement);
+		item.addEventListener("mouseout", removePitHighlight);
+	});
+}
+
+function displayGameSection() {
+    const game = document.getElementById("game");
     game.style.display = "flex";
 
-    var btStart = document.getElementById("start_game");
+    const btStart = document.getElementById("start_game");
     btStart.style.display = "none";
 
-    var btStart = document.getElementById("start_online_game");
-    btStart.style.display = "none";
+    const btOnlineStart = document.getElementById("start_online_game");
+    btOnlineStart.style.display = "none";
 
-    var btEnd = document.getElementById("stop_game");
+    const btEnd = document.getElementById("stop_game");
     btEnd.style.display = "block";
 }
 
-function disconnect() {
-    var game = document.getElementById("game");
+function displayMenu() {
+    const game = document.getElementById("game");
     game.style.display = "none";
 
-    var btStart = document.getElementById("start_game");
+    const btStart = document.getElementById("start_game");
     btStart.style.display = "block";
 
-    var btStart = document.getElementById("start_online_game");
-    btStart.style.display = "block";
+    const btOnlineStart = document.getElementById("start_online_game");
+    btOnlineStart.style.display = "block";
 
-    var btEnd = document.getElementById("stop_game");
+    const btEnd = document.getElementById("stop_game");
     btEnd.style.display = "none";
 }
 
@@ -138,7 +166,7 @@ function disconnectFromGame() {
     console.log(GAME_ID);
 
     if (GAME_ID === "") {
-        disconnect();
+        hideGameSection();
     }
 
     socket.emit("disconnect_game", {game_id: GAME_ID});
@@ -156,8 +184,10 @@ function toggleHowToPlaySection() {
     }
 }
 
-function movePit(element) {
-    var id = element.id.split("-");
+function movePit(event) {
+    removePitHighlight();
+
+    var id = event.target.id.split("-");
     var player_id = id[0];
     var pit = id[1];
     socket.emit("move", { "player_id": player_id, "pit": pit });

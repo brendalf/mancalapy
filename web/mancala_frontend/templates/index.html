@@ -31,15 +31,12 @@
                     {% for player_id in range(2) %}
                     <div class="pit-row">
                         {% for pit in range(6) %}
-                        {% if player_id == 1 %}
-                        <div id="{{ 1 - player_id }}-{{ pit }}" class="pit player-{{1 - player_id}}" onmouseover="planMovement(this)" onmouseout="removePitHighlight(this)" onclick="movePit(this)"></div>
-                        {% else %}
-                        <div id="{{ 1 - player_id }}-{{ 5 - pit }}" class="pit player-{{1 - player_id}}"></div>
-                        {% endif %}
+                        {% set pit_position = pit if player_id == 1 else 5 - pit %}
+                        <div id="{{ 1 - player_id }}-{{ pit_position }}" class="pit player-{{1 - player_id}}"></div>
                         {% endfor %}
                     </div>
                     {% endfor %}
-                    <h4 id="status">Current player: breno</h4>
+                    <h4 id="status"></h4>
                 </div>
                 <div>
                     <div id="mancala-0" class="mancala player-0"></div>

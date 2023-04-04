@@ -121,13 +121,6 @@ p {
 
 .player-0 {
     background-color: #cbf2ab;
-    cursor: pointer;
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.pit.player-0:hover {
-    background-color: #7aae4f;
 }
 
 .player-0.highlight{
@@ -138,9 +131,24 @@ p {
     background-color: #ffd2a3;
 }
 
-.pit.player-1.highlight{
+.player-1.highlight{
     background-color: #d27c22;
 }
+
+.active {
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.pit.player-0.active:hover {
+    background-color: #7aae4f;
+}
+
+.pit.player-1.active:hover {
+    background-color: #d27c22;
+}
+
 
 /* HOW TO PLAY */
 #how-to-play {
