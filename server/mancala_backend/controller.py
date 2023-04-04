@@ -2,9 +2,10 @@ from collections import deque
 
 from flask import request
 from flask_socketio import emit, join_room
+
+from mancala_backend.core import MancalaGame
 from mancala_backend.models.game import Game
 from mancala_backend.models.player import Player
-from mancala_backend.core import MancalaGame
 
 active_games = dict()
 players = dict()
@@ -27,20 +28,24 @@ def is_player_in_game(player_id: str) -> bool:
 
     return players[player_id].is_playing
 
+
 def get_player(player_id: str) -> Player:
     return players[player_id]
+
 
 def get_active_game(game_id: str) -> MancalaGame:
     return active_games[game_id]
 
+
 def delete_game(game_id: str) -> None:
     del active_games[game_id]
+
 
 def create_single_player_game(player_socket_id: str, data: dict) -> None:
     print("creating game")
     player = players[player_socket_id]
 
-    game = MancalaGame() 
+    game = MancalaGame()
 
     player.set_current_game(game.get_game_id())
 
@@ -91,9 +96,7 @@ def match_players_in_waiting_list() -> None:
 
 def healthcheck():
     return {
-        "active_games": [
-            game_id for game_id in active_games.keys()
-        ],
+        "active_games": [game_id for game_id in active_games.keys()],
         "players": [player for player in players],
         "waiting_list": [id for id in waiting_list],
     }

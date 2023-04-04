@@ -4,7 +4,7 @@ from mancala_backend.server import create_server, define_routes, define_socket_r
 
 if __name__ == "__main__":
     env = os.getenv("SERVER_ENV", "development")
-    
+
     is_prod = env.lower() == "production"
 
     app, socket = create_server()

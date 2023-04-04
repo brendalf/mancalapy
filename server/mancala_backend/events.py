@@ -1,13 +1,20 @@
 from collections import deque
 
 from flask_socketio import close_room, disconnect, emit
-from mancala_backend.controller import add_player_connection, delete_game, get_active_game, get_player, get_socket_id, is_player_in_game, create_single_player_game, add_player_to_waiting_list
+
+from mancala_backend.controller import (
+    add_player_connection,
+    add_player_to_waiting_list,
+    create_single_player_game,
+    delete_game,
+    get_active_game,
+    get_player,
+    get_socket_id,
+    is_player_in_game,
+)
 from mancala_backend.core.pit import PitReference
 
-game_types = {
-    "single": create_single_player_game,
-    "multi": add_player_to_waiting_list 
-}
+game_types = {"single": create_single_player_game, "multi": add_player_to_waiting_list}
 
 
 def on_connect():
@@ -23,7 +30,9 @@ def on_start_game(data: dict):
     player_socket_id = get_socket_id()
 
     if "type" not in data:
-        raise ValueError("You need to provide the game type before starting a new game.")
+        raise ValueError(
+            "You need to provide the game type before starting a new game."
+        )
 
     if is_player_in_game(player_socket_id):
         raise ValueError("User currently playing a game. Can't start a new one.")
@@ -59,16 +68,20 @@ def on_plan_movement(data):
     pit = PitReference(int(data["player_id"]), int(data["pit"]))
     movement = game.calculate_movement_plan(pit)
 
-    plan = [{"player_id": pit_reference.player_id, "position": pit_reference.position} for pit_reference in movement[0]]
+    plan = [
+        {"player_id": pit_reference.player_id, "position": pit_reference.position}
+        for pit_reference in movement[0]
+    ]
 
     payload = {
         "game_type": "single",
         "game_id": game.get_game_id(),
         "movement": plan,
-        "captured_stones": movement[1]
+        "captured_stones": movement[1],
     }
 
     emit("plan_movement", payload)
+
 
 def on_move(data):
     player_socket_id = get_socket_id()
@@ -94,7 +107,6 @@ def on_move(data):
     }
 
     emit("update_game", payload)
-
 
 
 def on_disconnect():

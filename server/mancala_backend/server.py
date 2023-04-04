@@ -1,16 +1,29 @@
 from typing import Tuple
 
-from mancala_backend.controller import healthcheck
-from mancala_backend.events import on_connect, on_disconnect, on_start_game, on_disconnect_game, on_plan_movement, on_move
 from flask import Flask
 from flask_socketio import SocketIO
+
+from mancala_backend.controller import healthcheck
+from mancala_backend.events import (
+    on_connect,
+    on_disconnect,
+    on_disconnect_game,
+    on_move,
+    on_plan_movement,
+    on_start_game,
+)
 
 
 def create_server() -> Tuple[Flask, SocketIO]:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'some-super-secret-key'
+    app.config["SECRET_KEY"] = "some-super-secret-key"
 
-    socket = SocketIO(app, cors_allowed_origins=["http://localhost:8080"], logger=True, engineio_logger=True)
+    socket = SocketIO(
+        app,
+        cors_allowed_origins=["http://localhost:8080"],
+        logger=True,
+        engineio_logger=True,
+    )
 
     return app, socket
 
