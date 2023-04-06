@@ -31,13 +31,14 @@ class MancalaGame:
 
     current_player: int = field(default=0, init=False)
 
-    id: UUID = uuid4()
+    id: UUID = field(init=False)
 
     num_players: int = 2
     stones_per_pit: int = 4
     pits_per_player: int = 6
 
     def __post_init__(self) -> None:
+        self.id = uuid4()
         self.board = Board(self.num_players, self.pits_per_player, self.stones_per_pit)
 
     def has_game_ended(self) -> bool:
